@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puntada Creativa | Manualidades Artesanales</title>
+    
+    <link rel="stylesheet" th:href="@{/diseñoweb.css}">
+</head>
+<body>
+<div class="contenedor">
+
+<header>
+    <a th:href="@{/}">
+        <img th:src="@{/img/logo.png}" alt="Logo Puntada Creativa" class="nav-logo">
+    </a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}" class="active">Inicio</a></li>
+            <li><a th:href="@{/catalogo}">Catálogo</a></li>
+            <li><a th:href="@{/nosotros}">Nosotros</a></li>
+            <li><a th:href="@{/ubicacion}">Ubicación</a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="carousel-container">
+    <button class="carousel-btn prev" onclick="moveSlide(-1)">&#10094;</button>
+    
+    <div class="carousel-track" id="carouselTrack">
+        
+        <div class="carousel-slide">
+            <img th:src="@{/img/21.jpeg}" alt="Colección Navideña">
+            <div class="carousel-caption">
+                <h3>Colecciones de Temporada</h3>
+                <p>Detalles únicos en fieltro confeccionados totalmente a mano.</p>
+            </div>
+        </div>
+        
+        <div class="carousel-slide">
+            <img th:src="@{/img/9.jpeg}" alt="Flores Eternas">
+            <div class="carousel-caption">
+                <h3>Flores Eternas</h3>
+                <p>Originales diseños con limpiapipas ideales para regalar.</p>
+            </div>
+        </div>
+        
+        <div class="carousel-slide">
+            <img th:src="@{/img/14.jpeg}" alt="Muñecas de Fieltro">
+            <div class="carousel-caption">
+                <h3>Muñequería Personalizada</h3>
+                <p>Creamos piezas a medida bajo tus especificaciones y gustos.</p>
+            </div>
+        </div>
+        
+    </div>
+    
+    <button class="carousel-btn next" onclick="moveSlide(1)">&#10095;</button>
+</div>
+
+<main class="content">
+    <section class="hero-home">
+        <h2>Bienvenidos a nuestro rincón artesanal</h2>
+        <p>En <strong>Puntada Creativa</strong> transformamos el fieltro y los limpiapipas en detalles mágicos para tu hogar y momentos especiales — hechos con paciencia, amor y creatividad.</p>
+        
+        <div class="summary-grid">
+            <div class="summary-item">
+                <h3>Manualidades Únicas</h3>
+                <p>Diseños personalizados hechos 100% a mano.</p>
+            </div>
+            <div class="summary-item">
+                <h3>Decoración Navideña</h3>
+                <p>Especialistas en darle vida y calidez a tu Navidad.</p>
+            </div>
+            <div class="summary-item">
+                <h3>Detalles Personalizados</h3>
+                <p>Creamos piezas a medida para obsequios inolvidables.</p>
+            </div>
+        </div>
+        
+        <div style="text-align:center; margin-top:32px;">
+            <a th:href="@{/catalogo}" class="btn">Ver catálogo completo</a>
+        </div>
+    </section>
+</main>
+
+<a href="https://wa.me/593989777823" target="_blank" class="whatsapp-float" title="Escríbenos por WhatsApp">💬</a>
+
+<footer>
+    <div class="footer-inner">
+        <p class="footer-logo-text">Puntada Creativa</p>
+        <p class="footer-info">
+            Dirección: Colibrí y Cashapamba, Sangolquí, Ecuador<br>
+            WhatsApp: <a href="https://wa.me/593989777823" target="_blank">+593 98 977 7823</a>
+        </p>
+        <p class="footer-author">© 2026 Puntada Creativa. Desarrollado con amor desde Quito.</p>
+    </div>
+</footer>
+
+<script>
+    // Variable global para rastrear cuál diapositiva se está mostrando (0 = Primera)
+    let currentIndex = 0;
+    
+    // Captura de los elementos del DOM necesarios
+    const track = document.getElementById('carouselTrack');
+    const slides = document.querySelectorAll('.carousel-slide');
+
+    /**
+     * Mueve el carrusel modificando la propiedad CSS translateX.
+     * Ejemplo: Si currentIndex es 1, desplaza el contenedor -100% hacia la izquierda.
+     */
+    function updateCarousel() {
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    }
+
+    /**
+     * Incrementa o decrementa el índice actual según la dirección recibida (-1 o 1).
+     * Aplica aritmética modular (operador %) para generar un bucle infinito:
+     * si pasa del último regresa al primero, y si retrocede desde el primero va al último.
+     */
+    function moveSlide(dir) {
+        currentIndex = (currentIndex + dir + slides.length) % slides.length;
+        updateCarousel();
+    }
+    
+    // Automatización: Cambia de diapositiva automáticamente cada 5 segundos (5000ms)
+    setInterval(() => moveSlide(1), 5000);
+</script>
+</body>
+</html>

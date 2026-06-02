@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Carrito | Puntada Creativa</title>
+    <link rel="stylesheet" th:href="@{/diseñoweb.css}">
+</head>
+<body>
+    <div class="contenedor">
+<header>
+    <a th:href="@{/}"><img th:src="@{/img/logo.png}" alt="Logo Puntada Creativa" class="nav-logo"></a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Inicio</a></li>
+            <li><a th:href="@{/catalogo}">Catálogo</a></li>
+            <li><a th:href="@{/nosotros}">Nosotros</a></li>
+            <li><a th:href="@{/ubicacion}">Ubicación</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="content">
+    <h2 class="titulo-centrado">Tu Carrito de Compras</h2>
+    <p class="subtitulo-centrado">Revisa el listado de tus manualidades seleccionadas antes de ordenar</p>
+    <div class="divider"></div>
+
+    <div id="cartContent">
+        
+        <div th:if="${#lists.isEmpty(carrito)}">
+            <table class="tabla-carrito">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio Unitario</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="vacio">
+                        <td colspan="5">Tu carrito está vacío actualmente.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="text-align:center;margin-top:20px;">
+                <a th:href="@{/catalogo}" class="btn">Ver catálogo</a>
+            </div>
+        </div>
+
+        <div th:if="${not #lists.isEmpty(carrito)}">
+            <table class="tabla-carrito">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio Unitario</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item, status : ${carrito}">
+                        <td><strong th:text="${item.producto.nombre}">Nombre del Producto</strong></td>
+                        <td th:text="${'$' + #numbers.formatDecimal(item.producto.precio, 1, 2)}">$0.00</td>
+                        <td th:text="${item.cantidad}">1</td>
+                        <td th:text="${'$' + #numbers.formatDecimal(item.subtotal, 1, 2)}">$0.00</td>
+                        <td>
+                            <a class="eliminar-btn" th:href="@{/pedido/eliminar(index=${status.index})}" style="text-decoration: none; display: inline-block;">✕ Eliminar</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="carrito-acciones">
+                <div>
+                    <a class="btn-vacio" th:href="@{/pedido/vaciar}" style="text-decoration: none; display: inline-block;">Vaciar carrito</a>
+                </div>
+                <div style="text-align:right;">
+                    <p class="total-destacado">Total: <span th:text="${'$' + #numbers.formatDecimal(total, 1, 2)}">$0.00</span></p>
+                    <br>
+                    <button onclick="enviarPedidoWhatsApp()" class="btn" style="cursor: pointer; border: none;">
+                        Enviar Pedido por WhatsApp 💬
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<a href="https://wa.me/593989777823" target="_blank" class="whatsapp-float" title="Escríbenos por WhatsApp">💬</a>
+
+<footer>
+    <div class="footer-inner">
+        <p class="footer-logo-text">Puntada Creativa</p>
+        <p class="footer-info">
+            Dirección: Colibrí y Cashapamba, Sangolquí, Ecuador<br>
+            WhatsApp: <a href="https://wa.me/593989777823" target="_blank">+593 98 977 7823</a>
+        </p>
+        <p class="footer-author">© 2026 Puntada Creativa. Desarrollado con amor desde Quito.</p>
+    </div>
+</footer>
+
+<script th:inline="javascript">
+function enviarPedidoWhatsApp() {
+    const carritoEnSesion = /*[[${carrito}]]*/ null;
+    const totalPedido = /*[[${total}]]*/ 0.00;
+
+    if (!carritoEnSesion || carritoEnSesion.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+    }
+
+    let lineas = '';
+    carritoEnSesion.forEach(item => {
+        // ADAPTADO: El objeto iterado de la lista tiene la estructura de la entidad Carrito
+        let nombreProd = item.producto.nombre;
+        let precioProd = item.producto.precio;
+        let cantidad = item.cantidad || 1; 
+        let subtotal = precioProd * cantidad;
+        
+        lineas += `• ${nombreProd} x${cantidad} = $${subtotal.toFixed(2)}\n`;
+    });
+
+    const mensajeTexto = `Hola! Me gustaría hacer el siguiente pedido:\n${lineas}Total: $${totalPedido.toFixed(2)}`;
+    const urlWhatsApp = `https://wa.me/593989777823?text=${encodeURIComponent(mensajeTexto)}`;
+
+    window.open(urlWhatsApp, '_blank');
+}
+</script>
+</body>
+</html>
