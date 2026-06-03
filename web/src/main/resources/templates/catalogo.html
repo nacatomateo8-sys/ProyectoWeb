@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo | Puntada Creativa</title>
-    <link rel="stylesheet" th:href="@{/diseñoweb.css}">
+    <link rel="stylesheet" th:href="@{/css/diseñoweb.css}">
 </head>
 <body>
 <div class="contenedor">
@@ -134,12 +134,15 @@
     </div>
 </main>
 
+<!-- Botón Carrito Flotante FAB -->
 <button class="cart-fab" onclick="openCart()">
     🛒 <span class="fab-count" id="fabCount">0</span>
 </button>
 
+<!-- Toast Notificaciones -->
 <div class="toast" id="toast"></div>
 
+<!-- WhatsApp Flotante -->
 <a href="https://wa.me/593989777823" target="_blank" class="whatsapp-float">💬</a>
 
 <footer>
@@ -153,6 +156,7 @@
     </div>
 </footer>
 
+<!-- MODAL DE PRODUCTO -->
 <div class="overlay" id="overlayProduct" onclick="closeIfBg(event,'overlayProduct')">
     <div class="product-modal">
         <button class="modal-x" onclick="closeOverlay('overlayProduct')">✕</button>
@@ -178,6 +182,7 @@
     </div>
 </div>
 
+<!-- CARRITO DRAWER (Panel Lateral) -->
 <div class="cart-drawer-backdrop" id="cartBackdrop" onclick="closeCart()"></div>
 <div class="cart-drawer" id="cartDrawer">
     <div class="cart-header">
@@ -194,54 +199,71 @@
     </div>
 </div>
 
-<script src="carrito.js"></script>
+<!-- SCRIPTS -->
+<script src="/js/carrito.js"></script>
 <script>
-// CORREGIDO: Se agregaron las rutas '/img/' a cada imagen para que el JS renderice bien el modal
+// ============================================================
+// DATOS DE PRODUCTOS
+// ============================================================
 const PRODUCTS = [
-    {id:1,  badge:"Temporada",  name:"Angel grande en tela",   desc:"Angel grande en tela con detalles en limpiapipas. Decoración navideña única.",     price:15.00, img:"/img/1.png"},
-    {id:2,  badge:"Popular",    name:"Muñequitas de tela",      desc:"Muñequitas de tela, sentadas en una repisa de madera artesanal.",                   price:5.00,  img:"/img/2.png"},
-    {id:3,  badge:"Nuevo",      name:"Muñequita en base",       desc:"Muñequita decorativa sobre base de madera con ganchos artesanales.",                price:12.50, img:"/img/3.png"},
-    {id:4,  badge:"Navidad",    name:"Colgantes Navideños",     desc:"Adornos para el árbol hechos con palitos de madera y mucha creatividad.",           price:2.50,  img:"/img/4.png"},
-    {id:5,  badge:"Artesanía",  name:"Caritas colgantes",       desc:"Caritas de Papa Noel hechas en fieltro para colgar en el árbol.",                   price:1.50,  img:"/img/5.png"},
-    {id:6,  badge:"Temporada",  name:"Flores Limpiapipas",      desc:"Flores coloridas hechas totalmente a mano con limpiapipas.",                        price:4.00,  img:"/img/6.png"},
-    {id:7,  badge:"Artesanía",  name:"Angel de la Guarda",      desc:"Angel de tamaño grande confeccionado en tela suave.",                               price:15.00, img:"/img/7.png"},
-    {id:8,  badge:"Artesanía",  name:"Girasol en Macetero",     desc:"Girasol decorativo en macetero con detalles en limpiapipas.",                       price:6.00,  img:"/img/8.png"},
-    {id:9,  badge:"Decoración", name:"Muñequitas Fieltro",      desc:"Muñequitas con texturas suaves para decorar cualquier rincón.",                     price:20.00, img:"/img/9.jpeg"},
-    {id:15, badge:"Hogar",      name:"Figuritas en Foami",      desc:"Figuras decorativas hechas detalladamente en foami.",                               price:2.00,  img:"/img/15.jpeg"}
+    { id: 1, nombre: "Angel grande en tela", precio: 15.00, desc: "Angel grande en tela con detalles en limpiapipas. Decoración navideña única.", imagen: "/img/1.png", badge: "Temporada" },
+    { id: 2, nombre: "Muñequitas de tela", precio: 5.00, desc: "Muñequitas de tela, sentadas en una repisa de madera artesanal.", imagen: "/img/2.png", badge: "Popular" },
+    { id: 3, nombre: "Muñequita en base", precio: 12.50, desc: "Muñequita decorativa sobre base de madera con ganchos artesanales.", imagen: "/img/3.png", badge: "Nuevo" },
+    { id: 4, nombre: "Colgantes Navideños", precio: 2.50, desc: "Adornos para el árbol hechos con palitos de madera y mucha creatividad.", imagen: "/img/4.png", badge: "Navidad" },
+    { id: 5, nombre: "Caritas colgantes", precio: 1.50, desc: "Caritas de Papa Noel hechas en fieltro para colgar en el árbol.", imagen: "/img/5.png", badge: "" },
+    { id: 6, nombre: "Flores Limpiapipas", precio: 4.00, desc: "Flores coloridas hechas totalmente a mano con limpiapipas.", imagen: "/img/6.png", badge: "Temporada" },
+    { id: 7, nombre: "Angel de la Guarda", precio: 15.00, desc: "Angel de tamaño grande confeccionado en tela suave.", imagen: "/img/7.png", badge: "" },
+    { id: 8, nombre: "Girasol en Macetero", precio: 6.00, desc: "Girasol decorativo en macetero con detalles en limpiapipas.", imagen: "/img/8.png", badge: "" },
+    { id: 9, nombre: "Muñequitas Fieltro", precio: 20.00, desc: "Muñequitas con texturas suaves para decorar cualquier rincón.", imagen: "/img/9.jpeg", badge: "Decoración" },
+    { id: 15, nombre: "Figuritas en Foami", precio: 2.00, desc: "Figuras decorativas hechas detalladamente en foami.", imagen: "/img/15.jpeg", badge: "Hogar" }
 ];
 
-let currentProduct = null;
+// ============================================================
+// FUNCIONES DEL MODAL Y CARRITO
+// ============================================================
+let currentProductId = 0;
 
 function openProductModal(id) {
-    const prod = PRODUCTS.find(p => p.id === id);
-    if (!prod) return;
-    currentProduct = prod;
-    document.getElementById('pmBadge').textContent  = prod.badge;
-    document.getElementById('pmTitle').textContent  = prod.name;
-    document.getElementById('pmDesc').textContent   = prod.desc;
-    document.getElementById('pmPrice').textContent  = `$${prod.price.toFixed(2)}`;
-    // Aquí cargará correctamente la imagen gracias al cambio en el array
-    document.getElementById('pmImgWrap').innerHTML  = `<img src="${prod.img}" alt="${prod.name}">`;
+    const product = PRODUCTS.find(p => p.id === id);
+    if (!product) return;
+    
+    currentProductId = id;
+    document.getElementById('pmImgWrap').innerHTML = `<img src="${product.imagen}" alt="${product.nombre}">`;
+    document.getElementById('pmBadge').textContent = product.badge;
+    document.getElementById('pmTitle').textContent = product.nombre;
+    document.getElementById('pmDesc').textContent = product.desc;
+    document.getElementById('pmPrice').textContent = '$' + product.precio.toFixed(2);
     document.getElementById('modalQty').textContent = '1';
-    openOverlay('overlayProduct');
+    
+    document.getElementById('overlayProduct').classList.add('open');
 }
 
-function changeModalQty(amt) {
-    const el  = document.getElementById('modalQty');
-    const val = Math.max(1, parseInt(el.textContent) + amt);
-    el.textContent = val;
+function closeOverlay(id) {
+    document.getElementById(id).classList.remove('open');
+}
+
+function closeIfBg(event, overlayId) {
+    if (event.target.id === overlayId) {
+        closeOverlay(overlayId);
+    }
+}
+
+function changeModalQty(delta) {
+    let qty = parseInt(document.getElementById('modalQty').textContent);
+    qty = Math.max(1, qty + delta);
+    document.getElementById('modalQty').textContent = qty;
 }
 
 function addFromModal() {
-    if (!currentProduct) return;
+    const product = PRODUCTS.find(p => p.id === currentProductId);
     const qty = parseInt(document.getElementById('modalQty').textContent);
-    addToCart(currentProduct.name, currentProduct.price, qty);
-    closeOverlay('overlayProduct');
+    
+    if (product) {
+        addToCart(product.nombre, product.precio, qty);
+        closeOverlay('overlayProduct');
+    }
 }
-
-function openOverlay(id)  { document.getElementById(id).classList.add('open'); }
-function closeOverlay(id) { document.getElementById(id).classList.remove('open'); }
-function closeIfBg(e, id) { if (e.target.id === id) closeOverlay(id); }
 </script>
+
 </body>
 </html>
