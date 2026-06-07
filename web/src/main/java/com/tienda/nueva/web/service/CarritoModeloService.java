@@ -71,10 +71,11 @@ public class CarritoModeloService {
         notificarObservadores();
     }
 
+    // CORRECCIÓN AQUÍ: Se cambió la sintaxis de '::' por expresiones Lambda comunes
     private void actualizarTotal() {
         this.total = items.stream()
-            .map(carrito::getSubtotal) // Usa el método getSubtotal() de tu clase carrito
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+            .map(item -> item.getSubtotal()) // Evita errores de mapeo directo si el editor falla
+            .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
     }
 
     public List<carrito> getItems() { return new ArrayList<>(items); }

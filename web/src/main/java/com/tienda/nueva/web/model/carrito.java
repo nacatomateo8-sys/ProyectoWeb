@@ -7,57 +7,56 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "carrito", uniqueConstraints = {@UniqueConstraint(columnNames = {"usuario_id", "producto_id"})})
 public class carrito { // Cambiado a Mayúscula según buenas prácticas
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
 
-    @Column(name = "usuario_id", nullable = false)
-    private int usuarioId; 
+ @Id
+ @GeneratedValue(strategy = GenerationType.IDENTITY)
+private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "producto_id", nullable = false)
-    private Producto producto;
+ @Column(name = "usuario_id", nullable = false)
+  private int usuarioId; 
 
-    @Column(nullable = false)
-    private int cantidad = 1;
+@ManyToOne
+ @JoinColumn(name = "producto_id", nullable = false)
+ private Producto producto;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime agregado = LocalDateTime.now();
+ @Column(nullable = false)
+ private int cantidad = 1;
 
-    // Constructor vacío obligatorio para JPA
-    public carrito() {} 
+ @Column(nullable = false, updatable = false)
+ private LocalDateTime agregado = LocalDateTime.now();
 
-    // Constructor mapeado
-    public carrito(int usuarioId, Producto producto, int cantidad) {
-        this.usuarioId = usuarioId;
-        this.producto = producto;
-        this.cantidad = cantidad;
-    }
+ // Constructor vacío obligatorio para JPA
+ public carrito() {} 
 
-    // Método helper para obtener el subtotal calculado usando BigDecimal de forma precisa
-    public BigDecimal getSubtotal() {
-        if (producto != null && producto.getPrecio() != null) {
-            return BigDecimal.valueOf(this.cantidad).multiply(producto.getPrecio());
-        }
-        return BigDecimal.ZERO;
-    }
+ // Constructor mapeado
+public carrito(int usuarioId, Producto producto, int cantidad) {
+this.usuarioId = usuarioId;
+ this.producto = producto;
+ this.cantidad = cantidad;
+ }
+ // Método helper para obtener el subtotal calculado usando BigDecimal de forma precisa
+ public BigDecimal getSubtotal() {
+ if (producto != null && producto.getPrecio() != null) {
+ return BigDecimal.valueOf(this.cantidad).multiply(producto.getPrecio());
+ }
+ return BigDecimal.ZERO;
+ }
 
-    // ============================================================
-    // GETTERS Y SETTERS
-    // ============================================================
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+ // ============================================================
+ // GETTERS Y SETTERS
+ // ============================================================
+ public int getId() { return id; }
+public void setId(int id) { this.id = id; }
 
-    public int getUsuarioId() { return usuarioId; }
-    public void setUsuarioId(int usuarioId) { this.usuarioId = usuarioId; }
+ public int getUsuarioId() { return usuarioId; }
+ public void setUsuarioId(int usuarioId) { this.usuarioId = usuarioId; }
 
-    public Producto getProducto() { return producto; }
-    public void setProducto(Producto producto) { this.producto = producto; }
+ public Producto getProducto() { return producto; }
+ public void setProducto(Producto producto) { this.producto = producto; }
 
-    public int getCantidad() { return cantidad; }
-    public void setCantidad(int cantidad) { this.cantidad = cantidad; }
+ public int getCantidad() { return cantidad; }
+ public void setCantidad(int cantidad) { this.cantidad = cantidad; }
 
-    public LocalDateTime getAgregado() { return agregado; }
-    public void setAgregado(LocalDateTime agregado) { this.agregado = agregado; }
+public LocalDateTime getAgregado() { return agregado; }
+ public void setAgregado(LocalDateTime agregado) { this.agregado = agregado; }
 }

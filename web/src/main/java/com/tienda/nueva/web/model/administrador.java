@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
 @Table(name = "administradores")
 public class administrador {
     
-@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id; // <-- Cambiado de 'int' a 'Long' para solucionar el error del Repositorio
 
     @Column(nullable = false, length = 100)
     private String nombre;
@@ -38,9 +38,9 @@ public class administrador {
         this.rol = rol;
     }
 
-    // Getters y Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    // Getters y Setters corregidos con Long
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
@@ -59,4 +59,4 @@ public class administrador {
 
     public LocalDateTime getCreado() { return creado; }
     public void setCreado(LocalDateTime creado) { this.creado = creado; }
-}          
+}

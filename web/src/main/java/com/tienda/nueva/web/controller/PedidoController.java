@@ -1,63 +1,38 @@
 package com.tienda.nueva.web.controller;
 
-import com.tienda.nueva.web.model.carrito;
-import com.tienda.nueva.web.service.CarritoModeloService;
-import com.tienda.nueva.web.service.CarritoObservador;
+import com.tienda.nueva.web.model.*;
+import com.tienda.nueva.web.repository.*;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDateTime;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-@Controller
-@RequestMapping("/pedido")
-public class PedidoController implements CarritoObservador {
+@RestController
+@RequestMapping("/api/pedidos")
+public class PedidoController {
 
     @Autowired
-    private CarritoModeloService carritoModelo;
+    private PedidoRepositorio pedidoRepo;
 
-    private List<carrito> productosVisuales;
-    private BigDecimal totalVisual = BigDecimal.ZERO;
+    @PostMapping("/finalizar")
+    @Transactional 
+    public String finalizarCompra(@RequestBody pedido nuevoPedido, HttpSession session) {
+        usuario cliente = (usuario) session.getAttribute("usuarioLogueado");
+        if (cliente == null) return "ERROR_SESION";
+        
+        nuevoPedido.setUsuario(cliente);
+        nuevoPedido.setFecha(LocalDateTime.now());
 
-    @Autowired
-    public void init() {
-        carritoModelo.registrarObservador(this);
-    }
+        // Asegurar la relación bidireccional antes de guardar
+        if (nuevoPedido.getDetalles() != null) {
+            for (Detallepedido detalle : nuevoPedido.getDetalles()) {
+                detalle.setPedido(nuevoPedido);
+            }
+        }
 
-    @Override
-    public void mapearCambiosAVista(List<carrito> items, BigDecimal total) {
-        this.productosVisuales = items;
-        this.totalVisual = total;
-    }
-
-    @GetMapping("/carrito")
-    public String verCarritoExamen(Model model) {
-        this.productosVisuales = carritoModelo.getItems();
-        this.totalVisual = carritoModelo.getTotal();
-
-        model.addAttribute("carrito", this.productosVisuales);
-        model.addAttribute("total", this.totalVisual);
-
-        return "carrito"; 
-    }
-
-    @PostMapping("/agregar")
-    public String agregarItem(@RequestParam int id, @RequestParam(defaultValue = "1") int cantidad) {
-        carritoModelo.agregarProducto(id, cantidad);
-        return "redirect:/pedido/carrito";
-    }
-
-    @GetMapping("/eliminar")
-    public String eliminarItem(@RequestParam int index) {
-        carritoModelo.eliminarProducto(index);
-        return "redirect:/pedido/carrito";
-    }
-
-    @GetMapping("/vaciar")
-    public String vaciarTodo() {
-        carritoModelo.vaciarCarrito();
-        return "redirect:/pedido/carrito";
+        // JPA guarda el pedido y sus detalles gracias al CascadeType.ALL
+        pedidoRepo.save(nuevoPedido);
+        return "OK";
     }
 }

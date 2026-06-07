@@ -5,10 +5,8 @@ import com.tienda.nueva.web.repository.ProductoRepositorio;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +27,7 @@ public class productoController {
         return carrito;
     }
 
+    // 1. AGREGAR PRODUCTOS AL CARRITO
     @PostMapping("/agregar")
     public String agregarAlCarrito(@RequestParam int id,
             @RequestParam(defaultValue = "1") int cantidad,
@@ -54,24 +53,10 @@ public class productoController {
         return "redirect:/catalogo";
     }
 
-    @GetMapping("/carrito")
-    public String verCarrito(Model model, HttpSession session) {
-        List<Producto> carrito = obtenerCarrito(session);
-        BigDecimal total = BigDecimal.ZERO;
+    // El método viejo @GetMapping("/carrito") ha sido ELIMINADO de aquí 
+    // para que no choque con CarritoWebController y compile perfectamente.
 
-        for (Producto prod : carrito) {
-            if (prod.getPrecio() != null) {
-                BigDecimal subtotal = prod.getPrecio()
-                        .multiply(BigDecimal.valueOf(prod.getCantidadSeleccionada()));
-                total = total.add(subtotal);
-            }
-        }
-
-        model.addAttribute("carrito", carrito);
-        model.addAttribute("total", total);
-        return "carrito";
-    }
-
+    // 2. ELIMINAR UN PRODUCTO ESPECÍFICO DEL CARRITO
     @GetMapping("/eliminar")
     public String eliminarDelCarrito(@RequestParam int index, HttpSession session) {
         List<Producto> carrito = obtenerCarrito(session);
@@ -80,6 +65,8 @@ public class productoController {
         }
         return "redirect:/carrito";
     }
+
+    // 3. VACIAR 
 
     @GetMapping("/vaciar")
     public String vaciarCarrito(HttpSession session) {

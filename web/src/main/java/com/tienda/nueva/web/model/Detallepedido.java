@@ -3,37 +3,27 @@ package com.tienda.nueva.web.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "detalle_pedido")
+@Table(name = "detallepedido")
 public class Detallepedido {
-    
-@Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "pedido_id", nullable = false)
+    @JoinColumn(name = "id_pedido", nullable = false)
     private pedido pedido;
 
     @ManyToOne
-    @JoinColumn(name = "producto_id", nullable = false)
+    @JoinColumn(name = "id_producto", nullable = false)
     private Producto producto;
 
-    @Column(nullable = false)
     private int cantidad;
-
-    @Column(name = "precio_unit", nullable = false)
     private double precioUnit;
 
     public Detallepedido() {}
 
-    public Detallepedido(pedido pedido, Producto producto, int cantidad, double precioUnit) {
-        this.pedido = pedido;
-        this.producto = producto;
-        this.cantidad = cantidad;
-        this.precioUnit = precioUnit;
-    }
-
-    // Getters y Setters
+    // Getters y Setters corregidos y unificados
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
